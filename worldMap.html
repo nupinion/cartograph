@@ -40,8 +40,8 @@ body {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.19/topojson.min.js"></script>
 <script>
 
-var width = 960,
-    height = 580;
+var width = window.innerWidth-50,
+    height = window.innerHeight-50;
 
 var color = d3.scale.category10();
 
@@ -64,18 +64,21 @@ svg.append("defs").append("path")
     .attr("id", "sphere")
     .attr("d", path);
 
-svg.append("use")
-    .attr("class", "stroke")
-    .attr("xlink:href", "#sphere");
 
-svg.append("use")
-    .attr("class", "fill")
-    .attr("xlink:href", "#sphere");
+// // removed background grid as it doesn't match distorted world view
 
-svg.append("path")
-    .datum(graticule)
-    .attr("class", "graticule")
-    .attr("d", path);
+// svg.append("use")
+//     .attr("class", "stroke")
+//     .attr("xlink:href", "#sphere");
+
+// svg.append("use")
+//     .attr("class", "fill")
+//     .attr("xlink:href", "#sphere");
+
+// svg.append("path")
+//     .datum(graticule)
+//     .attr("class", "graticule")
+//     .attr("d", path);
 
 d3.json("http://bl.ocks.org/mbostock/raw/4090846/world-50m.json", function(error, world) {
   if (error) throw error;
@@ -88,7 +91,16 @@ d3.json("http://bl.ocks.org/mbostock/raw/4090846/world-50m.json", function(error
     .enter().insert("path", ".graticule")
       .attr("class", "country")
       .attr("d", path)
-      .style("fill", function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); });
+      .style("fill", function(d, i) { return color(d.color = d3.max(neighbors[i], function(n) { return countries[n].color; }) + 1 | 0); })
+      //added code from here, in order to transform country area as per cartogram
+      .attr("transform", function(d) {
+        var centroid = path.centroid(d),
+            x = centroid[0],
+            y = centroid[1];
+        return "translate(" + x + "," + y + ")"
+            + "scale(" + Math.sqrt(Math.random() * 5 || 0) + ")" //changing the scale according to area
+            + "translate(" + -x + "," + -y + ")";
+      })
 
   svg.insert("path", ".graticule")
       .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))

@@ -1,2 +1,2 @@
 # cartograph
-Playing around with Michael Bostock's cartograph
+Playing around with Michael Bostock's cartogram
