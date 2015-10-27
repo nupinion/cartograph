@@ -28,12 +28,13 @@ var valueById = [
   .135, .152, .169,  NaN, .132, .167, .139, .184, .159, .140,
   .146, .157,  NaN, .139, .183, .160, .143
 ];
+//values for each state, to be represented by the area attributed to each state.
 
 var path = d3.geo.path();
 
 var svg = d3.select("body").append("svg")
-    .attr("width", 960)
-    .attr("height", 500);
+    .attr("width", window.innerWidth)
+    .attr("height", window.innerHeight);
 
 d3.json("http://bl.ocks.org/mbostock/raw/4090846/us.json", function(error, us) {
   if (error) throw error;
@@ -53,7 +54,7 @@ d3.json("http://bl.ocks.org/mbostock/raw/4090846/us.json", function(error, us) {
             x = centroid[0],
             y = centroid[1];
         return "translate(" + x + "," + y + ")"
-            + "scale(" + Math.sqrt(valueById[d.id] * 5 || 0) + ")"
+            + "scale(" + Math.sqrt(valueById[d.id] * 5 || 0) + ")" //changing the scale according to area
             + "translate(" + -x + "," + -y + ")";
       })
       .style("stroke-width", function(d) {
